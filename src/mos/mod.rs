@@ -310,7 +310,7 @@ impl MOS {
 pub fn get(icao: &str) -> Result<MOS, error::TaggedError> {
     let body = reqwest::get(&format!(
         "https://www.nws.noaa.gov/cgi-bin/mos/getmav.pl?sta={}",
-        icao
+        icao.to_string().to_uppercase()
     ))?
     .text()?;
     let raw_mos = extract_pre(&body)?;
