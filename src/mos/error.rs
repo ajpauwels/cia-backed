@@ -61,3 +61,5 @@ impl From<regex::Error> for TaggedError {
         }
     }
 }
+
+impl std::error::Error for TaggedError {}

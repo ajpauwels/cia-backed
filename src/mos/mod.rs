@@ -1,12 +1,12 @@
 use chrono::prelude::*;
-use chrono::Duration;
+use chrono::{DateTime, Duration};
 use regex::Regex;
 use scraper::{Html, Selector};
+use serde::{Deserialize, Serialize};
 
 pub mod error;
-pub mod zip;
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct MOSMeta {
     icao: String,
     timestamp: DateTime<Utc>,
@@ -21,7 +21,7 @@ impl Default for MOSMeta {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Deserialize, Serialize)]
 pub struct MOSEntry {
     timestamp: DateTime<Utc>,
     nx: Option<isize>,
@@ -72,18 +72,18 @@ impl Default for MOSEntry {
     }
 }
 
-#[derive(Debug, Default)]
+#[derive(Debug, Default, Deserialize, Serialize)]
 pub struct MOS {
     pub meta: MOSMeta,
     pub entries: Vec<MOSEntry>,
+    pub raw: String,
 }
 
 impl MOS {
     pub fn new(raw_mos: &str) -> Result<MOS, error::TaggedError> {
-        println!("{}", raw_mos);
-
         let lines: Vec<&str> = raw_mos.split("\n").collect();
         let mut mos = MOS::default();
+        mos.raw = raw_mos.to_string();
 
         // Metadata
         let meta_line = match lines.iter().next() {
@@ -125,6 +125,7 @@ impl MOS {
             None => return Err(error::new("could not parse hour line")),
         };
 
+        // Build out the entries
         mos.entries = chunks
             .iter()
             .enumerate()
@@ -264,6 +265,7 @@ impl MOS {
             })
             .collect();
 
+        // Add timestamps for all entries
         let num_entries = mos.entries.len();
         let base_ts = mos.meta.timestamp;
         mos.entries = mos

@@ -3,6 +3,7 @@ name = "cia-backend"
 version = "0.1.0"
 authors = ["ajp <8890201+ajpauwels@users.noreply.github.com>"]
 edition = "2018"
+autobins = false
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
@@ -10,5 +11,19 @@ edition = "2018"
 reqwest = "~0.9"
 scraper = "~0.11"
 cssparser = "~0.25"
-chrono = "~0.4"
-regex = "1"
+chrono = { version = "~0.4", features = ["serde"] }
+regex = "~1"
+tokio = { version = "~0.2", features = ["full"] }
+warp = "~0.2"
+serde = { version = "~1.0", features = ["derive"] }
+serde_json = "~1.0"
+lambda = { git = "https://github.com/awslabs/aws-lambda-rust-runtime/", branch = "master" }
+# lambda_runtime = { version = "~0.2" }
+# lambda_http = { version = "*" }
+openssl-sys = { version = "~0.9", features = ["vendored"] }
+# log = "^0.4"
+# simple_logger = "^1"
+
+[[bin]]
+name = "bootstrap"
+path = "src/main.rs"
